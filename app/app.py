@@ -1,3 +1,5 @@
+import re
+
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -7,7 +9,12 @@ app = Flask(__name__)
 def index():
     user_attrs = {}
     if request.method == 'POST':
-        user_attrs = request.form.to_dict()
+        raw = request.form.to_dict()
+    elif request.args:
+        raw = request.args.to_dict()
+    else:
+        raw = {}
+    user_attrs = {k: v for k, v in raw.items() if re.match(r'^[a-zA-Z]', k)}
     return render_template('index.html', user_attrs=user_attrs)
 
 
